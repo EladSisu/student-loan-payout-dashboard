@@ -27,8 +27,11 @@ class MethodOperation(Enum):
     CREATE_ENTITY = 3
 class MethodWrapper(Method):
     "class to wrap the Method class and add functionality to avoid overuse of the method api"
-    def __init__(self):
-        super().__init__(env='dev', api_key='sk_mgUJmVYiezQWypikbFrrJPPP')
+    def __init__(self,env:str='dev', api_key:str=''):
+        super().__init__(env=env,api_key=api_key)
+
+    # Method api has a limit of 600 calls per minute.
+    # This decorator will ensure that we do not exceed that limit.
     @sleep_and_retry
     @limits(calls=599, period=60)
     def invoke_method_api(self,request,method_operation:MethodOperation):
@@ -52,16 +55,9 @@ class TransactionService:
     @property
     async def employees_entities(self) -> Dict[str, str]:
         unique_employees = get_unique_employees(self.transactions)
-        return {tnx.Employee.DunkinId:self.get_employee_account_async(tnx) for tnx in unique_employees}
-        # unique_employees = get_unique_employees(self.transactions)
-        # tasks = [self.get_employee_account_async(tnx) for tnx in unique_employees]
-        # result = await asyncio.gather(*tasks)
-        # return {tnx.Employee.DunkinId: payment_account for tnx, payment_account in zip(unique_employees, result)}
+        return {tnx.Employee.DunkinId:self.get_employee_account(tnx) for tnx in unique_employees}
 
-    def get_employee_account_async(self, tnx):    
-        # loop = asyncio.get_event_loop()
-        # account = IndividualAccount(tnx.Payee, tnx.Employee, self.method_client)
-        # return await loop.run_in_executor(None, account.payment_account)
+    def get_employee_account(self, tnx):    
         return IndividualAccount(tnx.Payee, tnx.Employee, self.method_client).payment_account()
 
     @property

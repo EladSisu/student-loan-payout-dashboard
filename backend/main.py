@@ -1,5 +1,6 @@
 import csv
 import io
+from config import Config
 
 from bson import ObjectId
 from fastapi import BackgroundTasks, FastAPI, File, HTTPException, UploadFile
@@ -10,6 +11,7 @@ from models import Batch, BatchStatus, TransactionBatchResponse
 from pymongo import MongoClient, UpdateOne
 from xml_parser import parse_rows_from_xml
 
+
 app = FastAPI()
 
 app.add_middleware(
@@ -19,10 +21,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-uri = "mongodb+srv://eladhershkovitz:mika1992@payments.oy64vhq.mongodb.net/?retryWrites=true&w=majority"
-client = MongoClient(uri)
-
-method = MethodWrapper()
+config = Config()
+client = MongoClient(config.MONGO_URI)
+method = MethodWrapper(api_key=config.METHOD_API_KEY)
 db = client["payments"]
 
 # Get cvs report of Total amount of funds paid out per unique source account.
@@ -86,7 +87,6 @@ async def get_sum_transactions_for_account(id: str):
 async def get_payments_metadata(id: str):
     transactions_collection = db["transactions"]
     transactions = transactions_collection.find({"batch_id": id})
-    breakpoint()
     payments_list = [tnx['payment'] for tnx in transactions if 'payment' in tnx]
 
     # Define the fieldnames for the CSV
@@ -116,7 +116,6 @@ async def get_all_batches():
 @app.post("/upload/xml")
 async def upload_file(background_tasks: BackgroundTasks,file: UploadFile=File(...)):
     try:
-        breakpoint()
         filename = file.filename.split('.')[0]
         transactions = parse_rows_from_xml(file)
         total_transactions = len(transactions)

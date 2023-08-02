@@ -23,7 +23,7 @@ cd payments
 2. Install the frontend dependencies:
 
 ```bash
-cd frontend
+cd client
 npm install
 ```
 
@@ -46,7 +46,7 @@ MONGODB_URL = "mongodb://localhost:27017/"  # Change this to your MongoDB connec
 
 2. Set up Method API Key:
 
-Sign up for an account on [Method](https://www.method.io/) and obtain your API key. Update the API key in the `backend/app/config.py` file.
+Sign up for an account on [Method](https://dashboard.methodfi.com/login) and obtain your API key. Update the API key in the `backend/app/config.py` file.
 
 ```python
 METHOD_API_KEY = "your-method-api-key"  # Replace this with your Method API key
@@ -66,7 +66,7 @@ The FastAPI server will run at `http://localhost:8000`.
 2. Start the frontend development server:
 
 ```bash
-cd frontend
+cd client
 npm start
 ```
 
@@ -77,19 +77,14 @@ The frontend development server will run at `http://localhost:3000`.
 ## Usage
 
 1. **Upload XML File:** Use the dashboard to upload an XML file containing multiple transactions. The application will parse the XML file and create entities for each transaction.
+   see backend/employees.xml for example expected format.
 
 2. **Payout Processing:** Use the Method API to perform payouts for the entities created from the XML file. The application will process the payouts and update the status accordingly.
 
 3. **CSV Reports:** Once the payment process is complete, you can generate CSV reports for the payouts.
 
-## License
+## Note
 
-This project is licensed under the [MIT License](LICENSE).
+This project is just a poc, and not production ready.
 
-## Contribution
-
-Contributions are welcome! If you find any issues or have suggestions for improvements, feel free to submit a pull request or open an issue.
-
----
-
-Enjoy using the Student Loan Disbursement Payout Dashboard! If you encounter any issues or have any questions, please don't hesitate to reach out to us. Happy disbursement management!
+Enjoy using the Student Loan Disbursement Payout Dashboard! If you encounter any issues or have any questions, please don't hesitate to reach out. Happy disbursement management!
